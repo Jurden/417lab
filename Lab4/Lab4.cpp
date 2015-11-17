@@ -222,13 +222,14 @@ void clear(void){ // Prints return to clear the terminal
 	}
 }
 int main(int, char* []){                    // Begin the main program
-	int i,x;
+	int i,x,ch;
 	float t1,t2,t3,t4,t5;
 	float d1=27.2,d2=0,d3=0,d4=0,d5=10.5;
 	float A1=90,A2=180,A3=0,A4=90,A5=0;
 	float a1=0,a2=19.2,a3=19.2,a4=0,a5=0;
 	Matrix44 m,n;
 	Matrix44 m1,m2,m3,m4,m5,mf;
+	Matrix44 ik;
 	Matrix41 p;
 	
 	while(x){
@@ -295,6 +296,17 @@ int main(int, char* []){                    // Begin the main program
 				cout << endl << mf << endl;				
 				break;
 			case 9:
+				cout << "Enter 1 to choose new matrix or 2 to choose matrix from forward kinematics"<< endl;
+				cin >> ch;
+				if(ch=1){
+					cout <<endl;
+					cin >> ik;
+				}
+				if(ch ==2){
+					ik=mf;
+				}
+				break;
+			case 0: 
 				x=0;
 				break;
 			default:
