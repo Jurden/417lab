@@ -241,7 +241,9 @@ int main(int, char* []){                    // Begin the main program
 		cout << endl << "6 - Inverse";
 		cout << endl << "7 - Print matrices";
 		cout << endl << "8 - Forward Kinematics";
-		cout << endl << "9 - Quit" << endl;
+		cout << endl << "9 - Inverse Kinematics";
+		cout << endl << "0 - Quit" << endl;
+		
 		cin >> i;	//Read input
 		switch (i){
 			case 1:
@@ -298,13 +300,15 @@ int main(int, char* []){                    // Begin the main program
 			case 9:
 				cout << "Enter 1 to choose new matrix or 2 to choose matrix from forward kinematics"<< endl;
 				cin >> ch;
-				if(ch=1){
+				if(ch==1){
 					cout <<endl;
 					cin >> ik;
 				}
 				if(ch ==2){
 					ik=mf;
 				}
+				IKinematics(ik);
+
 				break;
 			case 0: 
 				x=0;
