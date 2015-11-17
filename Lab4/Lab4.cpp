@@ -12,9 +12,10 @@ using namespace std;
 class Matrix41;
 
 class Matrix44 {
-	private:
-		float element[4][4];
 	public:
+	//private:
+		float element[4][4];
+	//public:
 		Matrix44(void);
 		Matrix44 transpose(void) const;
 		friend istream& operator>> (istream& s, Matrix44& t);
@@ -23,6 +24,7 @@ class Matrix44 {
 		friend Matrix41 operator*(const Matrix44 &A, const Matrix41 &P); // Overriding * operator to multiply the 4x4 and 4x1
 		Matrix44 inverse(void) const;
 		friend Matrix44 FKinematics(float d, float O, float a, float A);
+		friend void IKinematics(const Matrix44 &A);
 };
 
 Matrix44 operator*(const Matrix44 &A, const Matrix44 &B){	// Actualy overriding of *
@@ -80,6 +82,51 @@ Matrix44 Matrix44::inverse(void) const{ //Inverting matrix
 	return result;
 }
 
+void IKinematics(Matrix44 &A){
+	float t1,t2,t3,t4,t5;
+	int i,j,k=0;
+//	int nx,ny,nz;		|nx sx ax tx| |0  1  2  3 |
+//	int sx,sy,sz;		|ny sy ay ty| |4  5  6  7 |
+//	int ax,ay,az;		|nz sz az tz| |8  9  10 11|
+//	int tx,ty,tz;
+	float nsat[12];
+	float a,z,q,w;
+	for(i=0;i<3;i++){
+		for(j=0;j<4;j++){
+			nsat[k]=A.element[i][j];
+			k++;
+		}
+	}
+
+/*	for(k=0;k<12;k++){
+		cout <<endl<< nsat[k]<<endl;
+	}*/
+
+	q= (nsat[7]-(10.5*nsat[6]));	//ty-d5*ay
+	w= (nsat[3]-(10.5*nsat[2]));	//tx-d5*ax
+	
+//	t1= atan2((nsat[7]-(10.5*nsat[6])),(nsat[3]-(10.5*nsat[2])))*180/pi;
+	t1= atan2(q,w)*180/pi;
+	
+	a= sqrt(pow(w,2)+pow(q,2));
+	z= round(1000*((nsat[11]-(10.5*nsat[10]))-27.2))/1000;
+	
+	t3= acos(((pow(a,2)+pow(z,2)-pow(19.2,2)-pow(19.2,2))/(2*19.2*19.2)))*180/pi;
+	if(isnan(t3)) t3=0;
+	
+	t2=atan2(z,a)*180/pi+atan2(19.2*sin(t3*pi/180),19.2+19.2*cos(t3*pi/180));
+	
+	t4=0;
+	t5=0;
+	
+	cout << endl<< "Theta 1 = "<< t1 << endl;
+	cout << "Theta 2 = "<< t2 << endl;
+	cout << "Theta 3 = "<< t3 << endl;
+	cout << "Theta 4 = "<< t4 << endl;
+	cout << "Theta 5 = "<< t5 << endl<< a << endl << z<<endl;
+
+
+}
 Matrix44 FKinematics(float d, float O, float a, float A){
 	Matrix44 result;
 	result.element[0][0]=cos((O*pi)/180);
