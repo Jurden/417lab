@@ -6,12 +6,12 @@ CC=gcc
 CXXFLAGS=-g -Wall -Wextra
 CFLAGS=-g -Wall -Wextra
 
-LIBDIR=/home/Jurden/Desktop/417Lab/labvolt/lib
+LIBDIR=/home/satan/Desktop/417Lab/labvolt/lib
 LIBLABVOLT=${LIBDIR}/liblabvolt.a
 
 # Include the labvolt and usb libraries
-INC=-I/home/Jurden/Desktop/417Lab/labvolt/inc
-LIBSDIR=-L/home/Jurden/Desktop/417Lab/labvolt/lib
+INC=-I/home/satan/Desktop/417Lab/labvolt/inc
+LIBSDIR=-L/home/satan/Desktop/417Lab/labvolt/lib
 LIBS=${LIBSDIR} -llabvolt -ludev 
 
 all: ${TARGET}

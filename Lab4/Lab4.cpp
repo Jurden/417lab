@@ -141,11 +141,11 @@ void IKinematics(Matrix44 &A){
 
 	t5=atan2(A35.element[2][0],A35.element[2][1])*180/pi;
 	
-	t1=round(1000*t1)/1000;
-	t2=round(1000*t2)/1000;
-	t3=round(1000*t3)/1000;
-	t4=round(1000*t4)/1000;
-	t5=round(1000*t5)/1000;
+	t1=round(100*t1)/100;
+	t2=round(100*t2)/100;
+	t3=round(100*t3)/100;
+	t4=round(100*t4)/100;
+	t5=round(100*t5)/100;
 
 
 	cout << endl<< "Theta 1 = "<< t1 << endl;
