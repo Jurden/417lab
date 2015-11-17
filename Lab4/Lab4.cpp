@@ -91,6 +91,8 @@ void IKinematics(Matrix44 &A){
 //	int tx,ty,tz;
 	float nsat[12];
 	float a,z,q,w;
+	Matrix44 A30,A35;
+
 	for(i=0;i<3;i++){
 		for(j=0;j<4;j++){
 			nsat[k]=A.element[i][j];
@@ -114,16 +116,43 @@ void IKinematics(Matrix44 &A){
 	t3= acos(((pow(a,2)+pow(z,2)-pow(19.2,2)-pow(19.2,2))/(2*19.2*19.2)))*180/pi;
 	if(isnan(t3)) t3=0;
 	
-	t2=atan2(z,a)*180/pi+atan2(19.2*sin(t3*pi/180),19.2+19.2*cos(t3*pi/180));
+	t2=atan2(z,a)*180/pi+atan2(19.2*sin(t3*pi/180),19.2+19.2*cos(t3*pi/180))*180/pi;
+
+	A30.element[0][0]=cos(t1*pi/180)*cos((t3-t2)*pi/180);
+	A30.element[0][1]=sin(t1*pi/180)*cos((t3-t2)*pi/180);
+	A30.element[0][2]=-sin((t3-t2)*pi/180);
+	A30.element[0][3]=-19.2-19.2*cos(t3*pi/180)+27.2*sin((t3-t2)*pi/180);
+	A30.element[1][0]=-cos(t1*pi/180)*sin((t3-t2)*pi/180);
+	A30.element[1][1]=-sin(t1*pi/180)*sin((t3-t2)*pi/180);
+	A30.element[1][2]=-cos((t3-t2)*pi/180);
+	A30.element[1][3]=19.2*sin(t3*pi/180)+27.2*cos((t3-t2)*pi/180);
+	A30.element[2][0]=-sin(t1*pi/180);
+	A30.element[2][1]=cos(t1*pi/180);
+	A30.element[2][2]=0;
+	A30.element[2][3]=0;
+	A30.element[3][0]=0;
+	A30.element[3][1]=0;
+	A30.element[3][2]=0;
+	A30.element[3][3]=1;
+		
+	A35=A30*A;
 	
-	t4=0;
-	t5=0;
+	t4=atan2(A35.element[1][2],A35.element[0][2])*180/pi;
+
+	t5=atan2(A35.element[2][0],A35.element[2][1])*180/pi;
 	
+	t1=round(1000*t1)/1000;
+	t2=round(1000*t2)/1000;
+	t3=round(1000*t3)/1000;
+	t4=round(1000*t4)/1000;
+	t5=round(1000*t5)/1000;
+
+
 	cout << endl<< "Theta 1 = "<< t1 << endl;
 	cout << "Theta 2 = "<< t2 << endl;
 	cout << "Theta 3 = "<< t3 << endl;
 	cout << "Theta 4 = "<< t4 << endl;
-	cout << "Theta 5 = "<< t5 << endl<< a << endl << z<<endl;
+	cout << "Theta 5 = "<< t5 << endl;
 
 
 }
