@@ -1,0 +1,33 @@
+TARGET=Lab
+OBJS=${TARGET}.o
+
+CXX=g++
+CC=gcc
+CXXFLAGS=-g -Wall -Wextra
+CFLAGS=-g -Wall -Wextra
+
+LIBDIR=/home/jurden/Desktop/417Lab/labvolt/lib
+LIBLABVOLT=${LIBDIR}/liblabvolt.a
+
+# Include the labvolt and usb libraries
+INC=-I/home/jurden/Desktop/417Lab/labvolt/inc
+LIBSDIR=-L/home/jurden/Desktop/417Lab/labvolt/lib
+LIBS=${LIBSDIR} -llabvolt -ludev 
+
+all: ${TARGET}
+
+# Compile lab
+${TARGET}: ${OBJS}
+	${CXX} ${CFLAGS} -o ${TARGET} ${OBJS} ${INC} ${LIBS}
+
+${OBJS}: ${TARGET}.cpp
+	${CXX} ${CFLAGS} -c -o ${TARGET}.o ${TARGET}.cpp ${INC} ${LIBS}
+
+
+# If the compiler complains about a missing -llabvolt library type
+# make labvolt
+# Or it will auto generate it if the library isn't in LIBDIR
+
+
+clean:
+	rm -f *.o core* ${TARGET}
