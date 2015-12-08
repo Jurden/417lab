@@ -1,4 +1,4 @@
-TARGET=Lab4
+TARGET=Lab
 OBJS=${TARGET}.o
 
 CXX=g++
