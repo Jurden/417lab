@@ -1,5 +1,5 @@
 
-#include "/home/jurden/Desktop/417Lab/labvolt/inc/labvolt.h"
+#include "/home/satan/Desktop/417Lab/labvolt/inc/labvolt.h"
 #include <unistd.h>
 #include <iostream>
 #include <cstdlib>
@@ -420,9 +420,6 @@ int main(int, char* []){                    // Begin the main program
 //	Matrix41 p;
 	int a,b,c,d,e,pitch,roll;
 	int A=0,B=0,C=0,D=0,E=0;
-	double *newx, *newy, *newz;
-	double *oldx, *oldy, *oldz;
-	
 	double x,y,z;
 	double xt,yt,zt;
 	double x1=20,y1=20,z1=10;
@@ -462,8 +459,8 @@ int main(int, char* []){                    // Begin the main program
 		if(ch==3){
 		//	MovetoCM(1,2,3,0);
 			Cout<<"Enter X Y Z"<<endl;
-			cin <<x<<y<<z;
-			
+			cin <<*x<<*y<<*z;
+
 		}
 		if(ch==1){
 			MovetoCM(20,20,5,20, 20, 10,1);
