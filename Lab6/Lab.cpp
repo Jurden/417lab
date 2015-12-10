@@ -29,7 +29,9 @@ class Matrix44 {
 		friend Matrix41 operator*(const Matrix44 &A, const Matrix41 &P); // Overriding * operator to multiply the 4x4 and 4x1
 		Matrix44 inverse(void) const;
 		friend Matrix44 FKinematics(float d, float O, float a, float A);
-		friend void IKinematics(const Matrix44 &A);
+		friend int IKinematics(const Matrix44 &A,int x);
+
+		friend Matrix44 Lab6(double x, double y, double z);
 };
 
 Matrix44 operator*(const Matrix44 &A, const Matrix44 &B){	// Actualy overriding of *
@@ -86,8 +88,24 @@ Matrix44 Matrix44::inverse(void) const{ //Inverting matrix
 	}
 	return result;
 }
+Matrix44 Lab6(double x, double y, double z){
+	int i,j;
+	double matrix[4][4] ={-1,0,0,0,0,1,0,0,0,0,-1,0,0,0,0,1};
+	Matrix44 ik;
+	for(i=0;i<3;i++){
+		for(j=0;j<3;j++){
+			ik.element[i][j]=matrix[i][j];
+		}
+	}
+	ik.element[0][3]=x;
+	ik.element[1][3]=y;
+	ik.element[2][3]=z;
+	cout << ik;
+	return ik;
 
-void IKinematics(Matrix44 &A){
+}
+
+int IKinematics(Matrix44 &A,int x){
 	float t1,t2,t3,t4,t5;
 	int i,j,k=0;
 //	int nx,ny,nz;		|nx sx ax tx| |0  1  2  3 |
@@ -98,6 +116,9 @@ void IKinematics(Matrix44 &A){
 	float a,z,q,w;
 	Matrix44 A30,A35;
 
+
+//	double matrix[4][4] ={-1,0,0,x,0,1,0,y,0,0,-1,z,0,0,0,1};
+//	A.element
 	for(i=0;i<3;i++){
 		for(j=0;j<4;j++){
 			nsat[k]=A.element[i][j];
@@ -152,13 +173,17 @@ void IKinematics(Matrix44 &A){
 	t4=round(100*t4)/100;
 	t5=round(100*t5)/100;
 
-
 	cout << endl<< "Theta 1 = "<< t1 << endl;
 	cout << "Theta 2 = "<< t2 << endl;
 	cout << "Theta 3 = "<< t3 << endl;
 	cout << "Theta 4 = "<< t4 << endl;
 	cout << "Theta 5 = "<< t5 << endl;
 
+	if(x==1) return t1;
+	if(x==2) return t2;
+	if(x==3) return t3;
+	if(x==4) return t4;
+	if(x==5) return t5;
 
 }
 Matrix44 FKinematics(float d, float O, float a, float A){
@@ -302,8 +327,10 @@ void clear(void){ // Prints return to clear the terminal
 		cout << endl;
 	}
 }
-int main(int, char* []){                    // Begin the main program
-	int i,run=1,ch;
+
+void MovetoCM(double newx, double newy, double newz, int toggle){
+
+	int i=0,j,run=1,ch;
 //	float t1,t2,t3,t4,t5;
 //	float d1=27.2,d2=0,d3=0,d4=0,d5=10.5;
 //	float A1=90,A2=180,A3=0,A4=90,A5=0;
@@ -313,19 +340,52 @@ int main(int, char* []){                    // Begin the main program
 	Matrix44 ik;
 //	Matrix41 p;
 	int a,b,c,d,e,pitch,roll;
-	int A=0,B=0,C=0,D=0,E=0;
-	int x,y,z;
-	init();
-	zero();               // Remember the home position
-	Degrees(0,-132,-3,0,0);
-	while(x){
-		//cout << "Enter 0 to quit, 1 to enter angles" << endl;
-		//cin >> x;
-		if(run!=0){
+	int A=45,B=27,C=54,D=44,E=-134;
+	double x,y,z;
+	double xt,yt,zt;
+	double x1=20,y1=20,z1=10;
+	double mag,total;
+	double vx,vy,vz;
+	if(toggle==0){
 			cout << endl << "Input xyz" << endl;
-			cin >> x >> y >> z;		
-			ik= -1 0 0 x 0 1 0 y 0 0 -1 z 0 0 0 1;
-
+			cin >> x >> y >> z;
+	}
+	if(toggle==1){
+		x=newx;
+		y=newy;
+		z=newz;
+	}
+		//	ik=Lab6(x,y,z);		
+	//		matrix= {{-1,0,0,x},{0,1,0,y},{0,0,-1,z},{0,0,0,1}};
+	//		for(i=0;i<3;i++){
+	//			for(j=0;j<3;j++){
+	//				ik[i][j]=matrix[i][j];
+	//			}
+	//		}
+			//ik=matrix;
+			xt=x1;
+			yt=y1;
+			zt=z1;
+			x1=x-x1;
+			y1=y-y1;
+			z1=z-z1;
+			mag=sqrt((x1*x1)+(y1*y1)+(z1*z1));
+			vx=x1/mag;
+			vy=y1/mag;
+			vz=z1/mag;
+			while((xt-x)+(yt-y)+(zt-z)){
+				xt=xt+vx;
+				//xt=x1;
+				yt=yt+vy;
+			//	yt=y1;
+				zt=zt+vz;
+		//		zt=z1;
+				ik=Lab6(xt,yt,zt);
+			a=IKinematics(ik,1);
+			b=IKinematics(ik,2);
+			c=IKinematics(ik,3);
+			pitch=IKinematics(ik,4);
+			roll=IKinematics(ik,5);
 			c-=b;
 			d=-roll;
 			e=-roll;
@@ -339,7 +399,138 @@ int main(int, char* []){                    // Begin the main program
 			C=c;
 			D=d;
 			E=e;
+		
+			
 		}
+		x1=x;
+		y1=y;
+		z1=z;
+}
+
+
+int main(int, char* []){                    // Begin the main program
+	int i=0,j,run=1,ch;
+//	float t1,t2,t3,t4,t5;
+//	float d1=27.2,d2=0,d3=0,d4=0,d5=10.5;
+//	float A1=90,A2=180,A3=0,A4=90,A5=0;
+//	float a1=0,a2=19.2,a3=19.2,a4=0,a5=0;
+//	Matrix44 m,n;
+//	Matrix44 m1,m2,m3,m4,m5,mf;
+	Matrix44 ik;
+//	Matrix41 p;
+	int a,b,c,d,e,pitch,roll;
+	int A=0,B=0,C=0,D=0,E=0;
+	double x,y,z;
+	double xt,yt,zt;
+	double x1=20,y1=20,z1=10;
+	double mag,total;
+	double vx,vy,vz;
+	init();
+	zero();               // Remember the home position
+	Degrees(0,-132,-3,0,0);
+	
+	ik=Lab6(20,20,10);
+
+	a=IKinematics(ik,1);
+	b=IKinematics(ik,2);
+	c=IKinematics(ik,3);
+	pitch=IKinematics(ik,4);
+	roll=IKinematics(ik,5);
+	c-=b;
+	d=-roll;
+	e=-roll;
+	d+=pitch;
+	e-=pitch;
+	d+=c;
+	e-=c;
+	Degrees(a-A,b-B,c-C,d-D,e-E);
+	A=a;
+	B=b;
+	C=c;
+	D=d;
+	E=e;
+	
+
+cout <<a<<endl <<b<<endl<<c<<endl<<d<<endl<<e<<endl;
+	while(1){
+		cout << "Enter 0 to quit, 1 to enter angles, 2 to toggle gripper" << endl;
+		cin >> ch;
+		if(ch==0) return 0;
+		if(ch==1){
+		MovetoCM(1,2,3,0);
+		}
+		if(ch==3){
+			MovetoCM(20,20,5,1);
+			gripperClose();
+			MovetoCM(20,20,10,1);
+			MovetoCM(20,-20,10,1);
+			MovetoCM(20,-20,5,1);
+			gripperOpen();
+			Degrees(0,0,0,0,0);
+}
+/*			cout << endl << "Input xyz" << endl;
+			cin >> x >> y >> z;
+		//	ik=Lab6(x,y,z);		
+	//		matrix= {{-1,0,0,x},{0,1,0,y},{0,0,-1,z},{0,0,0,1}};
+	//		for(i=0;i<3;i++){
+	//			for(j=0;j<3;j++){
+	//				ik[i][j]=matrix[i][j];
+	//			}
+	//		}
+			//ik=matrix;
+			xt=x1;
+			yt=y1;
+			zt=z1;
+			x1=x-x1;
+			y1=y-y1;
+			z1=z-z1;
+			mag=sqrt((x1*x1)+(y1*y1)+(z1*z1));
+			vx=x1/mag;
+			vy=y1/mag;
+			vz=z1/mag;
+			while((xt-x)+(yt-y)+(zt-z)){
+				xt=xt+vx;
+				//xt=x1;
+				yt=yt+vy;
+			//	yt=y1;
+				zt=zt+vz;
+		//		zt=z1;
+				ik=Lab6(xt,yt,zt);
+			a=IKinematics(ik,1);
+			b=IKinematics(ik,2);
+			c=IKinematics(ik,3);
+			pitch=IKinematics(ik,4);
+			roll=IKinematics(ik,5);
+			c-=b;
+			20d=-roll;
+			e=-roll;
+			d+=pitch;
+			e-=pitch;
+			d+=c;
+			e-=c;
+			Degrees(a-A,b-B,c-C,d-D,e-E);
+			A=a;
+			B=b;
+			C=c;
+			D=d;
+			E=e;
+		
+			
+		}
+		x1=x;
+		y1=y;
+		z1=z;
+		}*/
+	if(ch==2){
+		if(i==0){
+			 gripperClose();
+			i=1;
+		}
+	else if(i==1){
+			i=0;
+			 gripperOpen();
+		}
+	}
 	}
 		
 		
@@ -350,93 +541,7 @@ int main(int, char* []){                    // Begin the main program
     shutdown();
     return 0;
 
-/*
-	while(x){
-		cout << endl << "1 - Enter matrix A";
-		cout << endl << "2 - Enter matrix B";
-		cout << endl << "3 - Enter point P";
-		cout << endl << "4 - Multiply";
-		cout << endl << "5 - Transform";
-		cout << endl << "6 - Inverse";
-		cout << endl << "7 - Print matrices";
-		cout << endl << "8 - Forward Kinematics";
-		cout << endl << "9 - Inverse Kinematics";
-		cout << endl << "0 - Quit" << endl;
-		
-		cin >> i;	//Read input
-		switch (i){
-			case 1:
-				clear();
-				cout << endl << "Enter 16 elements of matrix A" << endl;
-				cin >> m;	//Assign input to matrix A
-				break;
-			case 2:
-				clear();
-				cout << endl << "Enter 16 elements of matrix B" << endl;
-				cin >> n;	//Assign input to matrix B
-				break;
-			case 3:
-				clear();
-				cout << endl << "Enter 3 elements of point P" << endl;
-				cin >> p;	//Assign input to matrix P
-				break;
-			case 4:
-				clear();
-				cout<<endl<<"A x B"<< endl<<(m*n)<<endl;
-							// Calls operator to multiply matrices	
-				break;
-			case 5:
-				clear();
-				cout<<endl<<"A x P"<< endl<<(m*p)<<endl;	
-						//Calls operator for 4x4 * 4x1
-				break;
-			case 6:
-				clear();
-				cout<<endl<<"Inverse of A"<< endl<<m.inverse()<<endl;
-						// Calls inverse
-				break;
-			case 7:
-				clear();
-				cout <<"Matrix A"<<endl<< m<<endl;
-				cout <<"Matrix B"<<endl<< n<<endl;
-				cout <<"Point P"<<endl<< p<<endl;
-				break;
-			case 8:
-				cout << "Input 5 values of theta" << endl;
-				cin >> t1 >> t2 >> t3 >> t4 >> t5;
-				m1=FKinematics(d1,t1,a1,A1);
-				m2=FKinematics(d2,t2,a2,A2);
-				m3=FKinematics(d3,t3,a3,A3);
-				m4=FKinematics(d4,90+t4,a4,A4);
-				m5=FKinematics(d5,t5,a5,A5);
-				cout << m1 << endl << m2 << endl << m3 << endl << m4 << endl << m5 << endl;
-				mf=m1*m2;
-				mf=mf*m3;
-				mf=mf*m4;
-				mf=mf*m5;
-				cout << endl << mf << endl;				
-				break;
-			case 9:
-				cout << "Enter 1 to choose new matrix or 2 to choose matrix from forward kinematics"<< endl;
-				cin >> ch;
-				if(ch==1){
-					cout <<endl;
-					cin >> ik;
-				}
-				if(ch ==2){
-					ik=mf;
-				}
-				IKinematics(ik);
 
-				break;
-			case 0: 
-				x=0;
-				break;
-			default:
-				cout << endl << "Invalid option" << endl;
-				break;
-		}
-	}*/
 }
 
 
